@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
+
+model Country {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  nameEn    String
+  nameAr    String
+  nameFr    String
+  createdAt DateTime  @default(now())
+  projects  Project[]
+}
+
+model Industry {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  nameEn    String
+  nameAr    String
+  nameFr    String
+  color     String    @default("gray")
+  createdAt DateTime  @default(now())
+  projects  Project[]
+}
+
+model Project {
+  id         String   @id @default(cuid())
+  nameEn     String
+  nameAr     String   @default("")
+  nameFr     String   @default("")
+  descEn     String
+  descAr     String   @default("")
+  descFr     String   @default("")
+  website    String
+  email      String
+  phone      String
+  countryId  String
+  country    Country  @relation(fields: [countryId], references: [id])
+  industryId String
+  industry   Industry @relation(fields: [industryId], references: [id])
+  logoEn     String   @default("")
+  logoAr     String   @default("")
+  logoFr     String   @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
