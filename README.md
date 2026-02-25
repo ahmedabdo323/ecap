@@ -1,75 +1,152 @@
 # eCAP - eCommerce Acceleration Programme
 
-A full-stack project directory built with **Next.js**, **Prisma**, and **Tailwind CSS**. Supports multi-language content (English, Arabic, French), project management via an admin panel, and filtering by countries and industries.
+A full-stack project directory built with **Next.js**, **Prisma**, **PostgreSQL**, and **Tailwind CSS**. Supports multi-language content (English, Arabic, French), project management via an admin panel, and filtering by countries and industries.
 
 ---
 
 ## Table of Contents
 
+- [Tech Stack](#tech-stack)
 - [Local Development](#local-development)
-- [Switch from SQLite to PostgreSQL](#switch-from-sqlite-to-postgresql)
+- [Project Structure](#project-structure)
 - [Deploy on DigitalOcean](#deploy-on-digitalocean)
   - [Option A: App Platform (Recommended)](#option-a-app-platform-recommended)
   - [Option B: Droplet (VPS)](#option-b-droplet-vps)
 - [Environment Variables](#environment-variables)
 - [Default Admin Credentials](#default-admin-credentials)
+- [Important Notes for Production](#important-notes-for-production)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript |
+| Database | PostgreSQL |
+| ORM | Prisma 6 |
+| Styling | Tailwind CSS 4 |
+| Auth | JWT (jsonwebtoken + bcryptjs) |
+| Icons | Lucide React |
 
 ---
 
 ## Local Development
 
+### Prerequisites
+
+- **Node.js** 18+ (20 recommended)
+- **Docker** (for running PostgreSQL locally)
+
+### 1. Clone and Install
+
 ```bash
-# 1. Install dependencies
+git clone https://github.com/ahmedabdo323/ecap.git
+cd ecap
 npm install
+```
 
-# 2. Create .env file
+### 2. Start PostgreSQL with Docker
+
+```bash
+docker run -d \
+  --name ecap-postgres \
+  -e POSTGRES_USER=ecap \
+  -e POSTGRES_PASSWORD=ecap123 \
+  -e POSTGRES_DB=ecap \
+  -p 5433:5432 \
+  postgres:16-alpine
+```
+
+### 3. Configure Environment
+
+```bash
 cp .env.example .env
-# Edit .env with your values (see Environment Variables section)
+```
 
-# 3. Generate Prisma client and run migrations
+The default `.env.example` is pre-configured for the Docker setup above:
+
+```env
+DATABASE_URL="postgresql://ecap:ecap123@localhost:5433/ecap?schema=public"
+JWT_SECRET="ecap-admin-secret-key-change-in-production"
+NEXT_PUBLIC_DEFAULT_LOCALE="en"
+```
+
+### 4. Setup Database
+
+```bash
 npx prisma generate
 npx prisma db push
-
-# 4. Seed the database (creates admin user, countries, industries, sample projects)
 npx tsx prisma/seed.ts
+```
 
-# 5. Start the dev server
+### 5. Start Dev Server
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) for the public site and [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel.
+- Public site: [http://localhost:3000](http://localhost:3000)
+- Admin panel: [http://localhost:3000/admin](http://localhost:3000/admin)
+
+### Docker Commands Reference
+
+```bash
+docker stop ecap-postgres      # Stop the database
+docker start ecap-postgres     # Start it again
+docker logs ecap-postgres      # View logs
+docker rm -f ecap-postgres     # Remove the container
+```
 
 ---
 
-## Switch from SQLite to PostgreSQL
+## Project Structure
 
-The project uses SQLite by default for local development. To use PostgreSQL (required for production), make two changes:
-
-### 1. Update `prisma/schema.prisma`
-
-Change the datasource provider from `sqlite` to `postgresql`:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
 ```
-
-### 2. Update `.env`
-
-Replace the SQLite connection string with your PostgreSQL URL:
-
-```env
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require"
-```
-
-### 3. Regenerate and migrate
-
-```bash
-npx prisma generate
-npx prisma db push
-npx tsx prisma/seed.ts
+ecap/
+├── prisma/
+│   ├── schema.prisma          # Database schema (PostgreSQL)
+│   └── seed.ts                # Seed data (admin, countries, industries, projects)
+├── public/
+│   ├── logo.png               # Dark logo (for light backgrounds)
+│   ├── logo-white.png         # White logo (for dark backgrounds)
+│   └── uploads/               # Uploaded project logos
+├── src/
+│   ├── app/
+│   │   ├── page.tsx            # Public homepage
+│   │   ├── layout.tsx          # Root layout
+│   │   ├── admin/
+│   │   │   ├── page.tsx        # Admin dashboard + login
+│   │   │   ├── admins/         # Admin users management
+│   │   │   ├── countries/      # Countries management
+│   │   │   ├── industries/     # Industries management
+│   │   │   └── projects/
+│   │   │       ├── new/        # Create project page
+│   │   │       └── [id]/edit/  # Edit project page
+│   │   └── api/
+│   │       ├── auth/           # Login & session endpoints
+│   │       ├── admins/         # Admin CRUD API
+│   │       ├── countries/      # Countries CRUD API
+│   │       ├── industries/     # Industries CRUD API
+│   │       ├── projects/       # Projects CRUD API
+│   │       └── upload/         # File upload API
+│   ├── components/
+│   │   ├── admin/              # Admin panel components
+│   │   ├── Header.tsx          # Public site header
+│   │   ├── Footer.tsx          # Public site footer
+│   │   ├── HeroSection.tsx     # Homepage hero
+│   │   ├── Filters.tsx         # Country/industry filters
+│   │   ├── ProjectCard.tsx     # Project display card
+│   │   └── Pagination.tsx      # Pagination component
+│   ├── hooks/
+│   │   └── useAuth.ts          # Authentication hook
+│   └── lib/
+│       ├── auth.ts             # JWT & bcrypt helpers
+│       ├── db.ts               # Prisma client instance
+│       ├── i18n.ts             # Translations (EN/AR/FR)
+│       ├── types.ts            # TypeScript interfaces
+│       └── constants.ts        # Industry color map
 ```
 
 ---
@@ -90,7 +167,7 @@ npx tsx prisma/seed.ts
 4. Choose your datacenter region
 5. Name your database cluster and click **Create**
 6. Once ready, go to the **Connection Details** tab
-7. Copy the **Connection String** — it looks like:
+7. Copy the **Connection String**:
    ```
    postgresql://doadmin:PASSWORD@db-xxx.ondigitalocean.com:25060/defaultdb?sslmode=require
    ```
@@ -127,7 +204,7 @@ In the App settings, add:
 | Variable | Value |
 |----------|-------|
 | `DATABASE_URL` | `postgresql://doadmin:PASSWORD@db-xxx.ondigitalocean.com:25060/defaultdb?sslmode=require` |
-| `JWT_SECRET` | A strong random string (e.g., generate with `openssl rand -base64 32`) |
+| `JWT_SECRET` | A strong random string (generate with `openssl rand -base64 32`) |
 | `NEXT_PUBLIC_DEFAULT_LOCALE` | `en` |
 
 #### Step 4: Add Trusted Source to Database
@@ -192,10 +269,8 @@ apt-get install -y nginx
 
 ```bash
 cd /var/www
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git ecap
+git clone https://github.com/ahmedabdo323/ecap.git
 cd ecap
-
-# Install dependencies
 npm install
 ```
 
@@ -205,7 +280,7 @@ npm install
 nano .env
 ```
 
-Add the following:
+Add:
 
 ```env
 DATABASE_URL="postgresql://doadmin:PASSWORD@db-xxx.ondigitalocean.com:25060/defaultdb?sslmode=require"
@@ -213,18 +288,7 @@ JWT_SECRET="your-strong-random-secret-here"
 NEXT_PUBLIC_DEFAULT_LOCALE="en"
 ```
 
-#### Step 6: Update Prisma Schema for PostgreSQL
-
-Make sure `prisma/schema.prisma` has:
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
-
-#### Step 7: Build and Seed
+#### Step 6: Build and Seed
 
 ```bash
 npx prisma generate
@@ -233,7 +297,7 @@ npx tsx prisma/seed.ts
 npm run build
 ```
 
-#### Step 8: Start with PM2
+#### Step 7: Start with PM2
 
 ```bash
 pm2 start npm --name "ecap" -- start
@@ -241,7 +305,7 @@ pm2 save
 pm2 startup
 ```
 
-#### Step 9: Configure Nginx
+#### Step 8: Configure Nginx
 
 ```bash
 nano /etc/nginx/sites-available/ecap
@@ -278,14 +342,14 @@ nginx -t
 systemctl restart nginx
 ```
 
-#### Step 10: Add SSL with Let's Encrypt
+#### Step 9: Add SSL with Let's Encrypt
 
 ```bash
 apt-get install -y certbot python3-certbot-nginx
 certbot --nginx -d your-domain.com
 ```
 
-#### Step 11: Add Trusted Source to Database
+#### Step 10: Add Trusted Source to Database
 
 Go to your **Database Cluster** settings and add your Droplet's IP to **Trusted Sources**.
 
@@ -293,7 +357,7 @@ Go to your **Database Cluster** settings and add your Droplet's IP to **Trusted 
 
 ### Updating the Deployment
 
-**App Platform**: Push to your GitHub branch — it auto-deploys.
+**App Platform**: Push to your GitHub branch -- it auto-deploys.
 
 **Droplet**:
 
@@ -313,8 +377,8 @@ pm2 restart ecap
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DATABASE_URL` | Database connection string | `postgresql://user:pass@host:5432/dbname?sslmode=require` |
-| `JWT_SECRET` | Secret key for signing admin JWT tokens | `openssl rand -base64 32` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/dbname?sslmode=require` |
+| `JWT_SECRET` | Secret key for signing admin JWT tokens | Generate with `openssl rand -base64 32` |
 | `NEXT_PUBLIC_DEFAULT_LOCALE` | Default language (`en`, `ar`, or `fr`) | `en` |
 
 ---
@@ -332,7 +396,7 @@ After running the seed script:
 
 ## Important Notes for Production
 
-1. **Change the JWT_SECRET** — never use the default in production.
-2. **Change the default admin password** — create a new admin from the admin panel and delete the seed account.
+1. **Change the JWT_SECRET** -- never use the default in production.
+2. **Change the default admin password** -- create a new admin from the admin panel and delete the seed account.
 3. **File uploads** are stored in `public/uploads/`. On App Platform, these are ephemeral (lost on redeploy). For persistent storage, consider using [DigitalOcean Spaces](https://www.digitalocean.com/products/spaces) or another S3-compatible storage.
-4. **Database backups** — DigitalOcean Managed Databases include automatic daily backups.
+4. **Database backups** -- DigitalOcean Managed Databases include automatic daily backups.
