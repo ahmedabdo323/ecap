@@ -3,6 +3,8 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { verifyToken } from "@/lib/auth";
 
+const UPLOAD_DIR = path.join(process.cwd(), "uploads");
+
 export async function POST(request: NextRequest) {
   const token = request.headers.get("authorization")?.replace("Bearer ", "");
   if (!token || !verifyToken(token)) {
@@ -27,13 +29,12 @@ export async function POST(request: NextRequest) {
 
   const ext = file.name.split(".").pop() || "png";
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
 
-  await mkdir(uploadDir, { recursive: true });
+  await mkdir(UPLOAD_DIR, { recursive: true });
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
-  await writeFile(path.join(uploadDir, filename), buffer);
+  await writeFile(path.join(UPLOAD_DIR, filename), buffer);
 
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  return NextResponse.json({ url: `/api/uploads/${filename}` });
 }
