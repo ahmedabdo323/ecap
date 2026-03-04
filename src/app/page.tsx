@@ -11,7 +11,7 @@ import ProjectCard from "@/components/ProjectCard";
 import Footer from "@/components/Footer";
 import { Search } from "lucide-react";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 18;
 
 export default function HomePage() {
   const [locale, setLocale] = useState<Locale>("en");
