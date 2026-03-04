@@ -18,6 +18,7 @@ model Admin {
 model Country {
   id        String    @id @default(cuid())
   slug      String    @unique
+  code      String    @default("")
   nameEn    String
   nameAr    String
   nameFr    String

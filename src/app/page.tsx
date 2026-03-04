@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Locale } from "@/lib/i18n";
 import { isRtl, t } from "@/lib/i18n";
 import type { Project, Country, Industry } from "@/lib/types";
@@ -8,16 +8,10 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import Filters from "@/components/Filters";
 import ProjectCard from "@/components/ProjectCard";
-import Pagination from "@/components/Pagination";
 import Footer from "@/components/Footer";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 
-interface ApiResponse {
-  projects: Project[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
+const PAGE_SIZE = 20;
 
 export default function HomePage() {
   const [locale, setLocale] = useState<Locale>("en");
@@ -25,13 +19,15 @@ export default function HomePage() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [industries, setIndustries] = useState<Industry[]>([]);
   const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
   const [selectedIndustryId, setSelectedIndustryId] = useState("");
   const [selectedCountryId, setSelectedCountryId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     Promise.all([
@@ -43,50 +39,78 @@ export default function HomePage() {
     });
   }, []);
 
-  const fetchProjects = useCallback(async () => {
-    setLoading(true);
+  const fetchProjects = useCallback(async (pageNum: number, append: boolean) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
+
     const params = new URLSearchParams();
     if (activeSearch) params.set("search", activeSearch);
     if (selectedIndustryId) params.set("industryId", selectedIndustryId);
     if (selectedCountryId) params.set("countryId", selectedCountryId);
-    params.set("page", currentPage.toString());
-    params.set("limit", "6");
+    params.set("page", pageNum.toString());
+    params.set("limit", PAGE_SIZE.toString());
 
     try {
       const res = await fetch(`/api/projects?${params}`);
-      const data: ApiResponse = await res.json();
-      setProjects(data.projects);
+      const data = await res.json();
+
+      if (append) {
+        setProjects((prev) => [...prev, ...data.projects]);
+      } else {
+        setProjects(data.projects);
+      }
+
       setTotal(data.total);
-      setTotalPages(data.totalPages);
+      setHasMore(pageNum < data.totalPages);
     } catch (err) {
       console.error("Failed to fetch projects:", err);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
-  }, [activeSearch, selectedIndustryId, selectedCountryId, currentPage]);
+  }, [activeSearch, selectedIndustryId, selectedCountryId]);
 
   useEffect(() => {
-    fetchProjects();
+    setPage(1);
+    fetchProjects(1, false);
   }, [fetchProjects]);
+
+  useEffect(() => {
+    if (!sentinelRef.current || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          setPage((prev) => {
+            const next = prev + 1;
+            fetchProjects(next, true);
+            return next;
+          });
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, loading, fetchProjects]);
 
   const handleSearch = () => {
     setActiveSearch(searchInput);
-    setCurrentPage(1);
   };
 
   const handleIndustryChange = (industryId: string) => {
     setSelectedIndustryId(industryId);
-    setCurrentPage(1);
   };
 
   const handleCountryChange = (countryId: string) => {
     setSelectedCountryId(countryId);
-    setCurrentPage(1);
   };
 
   const rtl = isRtl(locale);
-  const startItem = (currentPage - 1) * 6 + 1;
-  const endItem = Math.min(currentPage * 6, total);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50" dir={rtl ? "rtl" : "ltr"}>
@@ -117,7 +141,7 @@ export default function HomePage() {
             <p className="text-[13px] text-slate-400">
               {t(locale, "results.showing")}{" "}
               <span className="font-semibold text-slate-600">
-                {startItem}-{endItem}
+                1-{projects.length}
               </span>{" "}
               {t(locale, "results.of")} {total} {t(locale, "results.results")}
             </p>
@@ -159,24 +183,28 @@ export default function HomePage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                locale={locale}
-                index={index}
-              />
-            ))}
-          </div>
-        )}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  locale={locale}
+                  index={index}
+                />
+              ))}
+            </div>
 
-        <Pagination
-          locale={locale}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+            {loadingMore && (
+              <div className="flex items-center justify-center py-10">
+                <Loader2 size={24} className="text-slate-400 animate-spin" />
+                <span className="text-sm text-slate-400 ms-2">Loading more projects...</span>
+              </div>
+            )}
+
+            <div ref={sentinelRef} className="h-1" />
+          </>
+        )}
       </main>
 
       <Footer locale={locale} />

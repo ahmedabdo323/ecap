@@ -17,11 +17,11 @@ export async function PUT(
   }
 
   const { id } = await params;
-  const { nameEn, nameAr, nameFr, slug } = await request.json();
+  const { nameEn, nameAr, nameFr, slug, code } = await request.json();
 
   const country = await prisma.country.update({
     where: { id },
-    data: { nameEn, nameAr, nameFr, slug },
+    data: { nameEn, nameAr, nameFr, slug, code: code || "" },
   });
   return NextResponse.json(country);
 }

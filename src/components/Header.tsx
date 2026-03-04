@@ -17,7 +17,7 @@ export default function Header({ locale, onLocaleChange }: HeaderProps) {
 
   return (
     <header
-      className="bg-[#0f172a] border-b border-white/[0.06] sticky top-0 z-50 backdrop-blur-md"
+      className=" border-b border-white/[0.06] sticky top-0 z-50 backdrop-blur-md"
       dir={rtl ? "rtl" : "ltr"}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,17 +27,12 @@ export default function Header({ locale, onLocaleChange }: HeaderProps) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
-            <Link
-              href="/"
-              className="text-[13px] text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all"
-            >
-              {t(locale, "nav.directory")}
-            </Link>
+           
             <a
               href="https://forms.zohopublic.com/sabat/form/eCAPContentDevelopmentFormWave21/formperma/lDnHLGUYWoL8ZIuPefcLqKwNiuHJflmRzLyJNc9AYI0"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[13px] text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all"
+              className="text-[13px] text-black hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all"
             >
               {t(locale, "nav.joinProgram")}
             </a>
@@ -47,7 +42,7 @@ export default function Header({ locale, onLocaleChange }: HeaderProps) {
             <div className="relative">
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 text-[13px] text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all"
+                className="flex items-center gap-1.5 text-[13px] text-black hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all"
               >
                 <Globe size={14} className="opacity-60" />
                 <span>{localeNames[locale]}</span>

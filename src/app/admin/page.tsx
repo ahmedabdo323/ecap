@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAuth } from "@/hooks/useAuth";
+import ReactCountryFlag from "react-country-flag";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -255,7 +256,14 @@ function Dashboard() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">{project.industry.nameEn}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{project.country.nameEn}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    <span className="flex items-center gap-2">
+                      {project.country.code && (
+                        <ReactCountryFlag countryCode={project.country.code} svg style={{ width: "1.2em", height: "1.2em" }} />
+                      )}
+                      {project.country.nameEn}
+                    </span>
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button

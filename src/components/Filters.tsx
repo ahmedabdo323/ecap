@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { Locale, isRtl, t } from "@/lib/i18n";
 import type { Country, Industry } from "@/lib/types";
-import { SlidersHorizontal, MapPin, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, MapPin, ChevronDown, Check, Globe } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 
 interface FiltersProps {
   locale: Locale;
@@ -18,6 +20,92 @@ function getName(item: { nameEn: string; nameAr: string; nameFr: string }, local
   if (locale === "ar") return item.nameAr || item.nameEn;
   if (locale === "fr") return item.nameFr || item.nameEn;
   return item.nameEn;
+}
+
+function CountryDropdown({
+  locale,
+  countries,
+  selectedCountryId,
+  onCountryChange,
+}: {
+  locale: Locale;
+  countries: Country[];
+  selectedCountryId: string;
+  onCountryChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const selected = countries.find((c) => c.id === selectedCountryId);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-[7px] text-[13px] text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 min-w-[200px] transition-all cursor-pointer font-medium"
+      >
+        {selected?.code ? (
+          <ReactCountryFlag countryCode={selected.code} svg style={{ width: "1.2em", height: "1.2em" }} />
+        ) : (
+          <Globe size={14} className="text-slate-400" />
+        )}
+        <span className="flex-1 text-start">
+          {selected ? getName(selected, locale) : t(locale, "filter.allRegions")}
+        </span>
+        <ChevronDown size={14} className={`text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full mt-1.5 end-0 z-50 bg-white border border-slate-200 rounded-xl shadow-xl min-w-[260px] max-h-[320px] overflow-y-auto py-1">
+          <button
+            onClick={() => { onCountryChange(""); setOpen(false); }}
+            className={`flex items-center gap-3 w-full text-start px-4 py-2.5 text-sm transition-colors ${
+              !selectedCountryId
+                ? "bg-blue-50 text-blue-700 font-medium"
+                : "text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            <Globe size={16} className="text-slate-400 shrink-0" />
+            <span className="flex-1">{t(locale, "filter.allRegions")}</span>
+            {!selectedCountryId && <Check size={16} className="text-blue-600 shrink-0" />}
+          </button>
+
+          {countries.map((country) => {
+            const isSelected = selectedCountryId === country.id;
+            return (
+              <button
+                key={country.id}
+                onClick={() => { onCountryChange(country.id); setOpen(false); }}
+                className={`flex items-center gap-3 w-full text-start px-4 py-2.5 text-sm transition-colors ${
+                  isSelected
+                    ? "bg-blue-50 text-blue-700 font-medium"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                {country.code ? (
+                  <ReactCountryFlag countryCode={country.code} svg style={{ width: "1.3em", height: "1.3em" }} className="shrink-0" />
+                ) : (
+                  <Globe size={16} className="text-slate-400 shrink-0" />
+                )}
+                <span className="flex-1">{getName(country, locale)}</span>
+                {isSelected && <Check size={16} className="text-blue-600 shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Filters({
@@ -72,21 +160,12 @@ export default function Filters({
               <MapPin size={13} />
               {t(locale, "filter.region")}
             </span>
-            <div className="relative">
-              <select
-                value={selectedCountryId}
-                onChange={(e) => onCountryChange(e.target.value)}
-                className="appearance-none border border-slate-200 rounded-xl px-4 py-[7px] pe-9 text-[13px] text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 min-w-[180px] transition-all cursor-pointer font-medium"
-              >
-                <option value="">{t(locale, "filter.allRegions")}</option>
-                {countries.map((country) => (
-                  <option key={country.id} value={country.id}>
-                    {getName(country, locale)}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={14} className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            </div>
+            <CountryDropdown
+              locale={locale}
+              countries={countries}
+              selectedCountryId={selectedCountryId}
+              onCountryChange={onCountryChange}
+            />
           </div>
         </div>
       </div>

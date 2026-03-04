@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { nameEn, nameAr, nameFr, slug } = await request.json();
+  const { nameEn, nameAr, nameFr, slug, code } = await request.json();
 
   if (!nameEn || !slug) {
     return NextResponse.json({ error: "nameEn and slug are required" }, { status: 400 });
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const country = await prisma.country.create({
-    data: { nameEn, nameAr: nameAr || "", nameFr: nameFr || "", slug },
+    data: { nameEn, nameAr: nameAr || "", nameFr: nameFr || "", slug, code: code || "" },
   });
   return NextResponse.json(country, { status: 201 });
 }

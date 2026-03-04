@@ -29,10 +29,10 @@ export default function HeroSection({
       <div className="absolute bottom-0 end-[10%] w-80 h-80 bg-blue-200/15 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative max-w-3xl mx-auto px-4 pt-16 pb-10 text-center">
-        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full mb-5 shadow-lg shadow-teal-500/20">
+        {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full mb-5 shadow-lg shadow-teal-500/20">
           <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
           {t(locale, "hero.badge")}
-        </div>
+        </div> */}
 
         <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 mb-4 leading-[1.1] tracking-tight">
           {t(locale, "hero.title")}
@@ -56,7 +56,7 @@ export default function HeroSection({
           </div>
           <button
             onClick={onSearch}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-7 py-3.5 text-sm font-semibold transition-all shrink-0 cursor-pointer"
+            className="bg-[#FE6721] hover:bg-[#d56b1c] text-white px-7 py-3.5 text-sm font-semibold transition-all shrink-0 cursor-pointer"
           >
             {t(locale, "search.button")}
           </button>

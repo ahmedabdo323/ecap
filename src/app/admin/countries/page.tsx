@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAuth } from "@/hooks/useAuth";
 import type { Country } from "@/lib/types";
+import ReactCountryFlag from "react-country-flag";
 
 export default function CountriesPage() {
   const { token, loading } = useAuth();
@@ -33,12 +34,13 @@ export default function CountriesPage() {
 
 interface CountryForm {
   slug: string;
+  code: string;
   nameEn: string;
   nameAr: string;
   nameFr: string;
 }
 
-const emptyForm: CountryForm = { slug: "", nameEn: "", nameAr: "", nameFr: "" };
+const emptyForm: CountryForm = { slug: "", code: "", nameEn: "", nameAr: "", nameFr: "" };
 
 function CountriesContent({ token }: { token: string }) {
   const [countries, setCountries] = useState<Country[]>([]);
@@ -91,6 +93,7 @@ function CountriesContent({ token }: { token: string }) {
     setEditingId(country.id);
     setForm({
       slug: country.slug,
+      code: country.code || "",
       nameEn: country.nameEn,
       nameAr: country.nameAr,
       nameFr: country.nameFr,
@@ -147,7 +150,7 @@ function CountriesContent({ token }: { token: string }) {
             {error && (
               <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg">{error}</div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1.5">Name (English) *</label>
                 <input
@@ -171,6 +174,20 @@ function CountriesContent({ token }: { token: string }) {
                   placeholder="country-slug"
                   className={inputClass}
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1.5">ISO Code (2-letter)</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text" value={form.code} maxLength={2}
+                    onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
+                    placeholder="SA, AE, EG..."
+                    className={inputClass}
+                  />
+                  {form.code.length === 2 && (
+                    <ReactCountryFlag countryCode={form.code} svg style={{ width: "2em", height: "2em" }} />
+                  )}
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -214,6 +231,7 @@ function CountriesContent({ token }: { token: string }) {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50 text-left">
+              <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Flag</th>
               <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Slug</th>
               <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">English</th>
               <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Arabic</th>
@@ -224,11 +242,18 @@ function CountriesContent({ token }: { token: string }) {
           <tbody className="divide-y divide-gray-200">
             {countries.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-sm text-gray-400">No countries yet.</td>
+                <td colSpan={6} className="px-6 py-12 text-center text-sm text-gray-400">No countries yet.</td>
               </tr>
             )}
             {countries.map((c) => (
               <tr key={c.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  {c.code ? (
+                    <ReactCountryFlag countryCode={c.code} svg style={{ width: "1.5em", height: "1.5em" }} />
+                  ) : (
+                    <span className="text-gray-300">—</span>
+                  )}
+                </td>
                 <td className="px-6 py-4">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
                     {c.slug}

@@ -8,6 +8,7 @@ export interface Admin {
 export interface Country {
   id: string;
   slug: string;
+  code: string;
   nameEn: string;
   nameAr: string;
   nameFr: string;

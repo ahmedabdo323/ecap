@@ -19,32 +19,33 @@ async function main() {
 
   // --- Countries ---
   const countries = [
-    { slug: "saudi-arabia", nameEn: "Saudi Arabia", nameAr: "المملكة العربية السعودية", nameFr: "Arabie saoudite" },
-    { slug: "uae", nameEn: "United Arab Emirates", nameAr: "الإمارات العربية المتحدة", nameFr: "Émirats arabes unis" },
-    { slug: "egypt", nameEn: "Egypt", nameAr: "مصر", nameFr: "Égypte" },
-    { slug: "jordan", nameEn: "Jordan", nameAr: "الأردن", nameFr: "Jordanie" },
-    { slug: "kuwait", nameEn: "Kuwait", nameAr: "الكويت", nameFr: "Koweït" },
-    { slug: "qatar", nameEn: "Qatar", nameAr: "قطر", nameFr: "Qatar" },
-    { slug: "bahrain", nameEn: "Bahrain", nameAr: "البحرين", nameFr: "Bahreïn" },
-    { slug: "oman", nameEn: "Oman", nameAr: "عُمان", nameFr: "Oman" },
-    { slug: "lebanon", nameEn: "Lebanon", nameAr: "لبنان", nameFr: "Liban" },
-    { slug: "morocco", nameEn: "Morocco", nameAr: "المغرب", nameFr: "Maroc" },
-    { slug: "tunisia", nameEn: "Tunisia", nameAr: "تونس", nameFr: "Tunisie" },
-    { slug: "iraq", nameEn: "Iraq", nameAr: "العراق", nameFr: "Irak" },
-    { slug: "algeria", nameEn: "Algeria", nameAr: "الجزائر", nameFr: "Algérie" },
-    { slug: "libya", nameEn: "Libya", nameAr: "ليبيا", nameFr: "Libye" },
-    { slug: "sudan", nameEn: "Sudan", nameAr: "السودان", nameFr: "Soudan" },
-    { slug: "palestine", nameEn: "Palestine", nameAr: "فلسطين", nameFr: "Palestine" },
-    { slug: "syria", nameEn: "Syria", nameAr: "سوريا", nameFr: "Syrie" },
-    { slug: "yemen", nameEn: "Yemen", nameAr: "اليمن", nameFr: "Yémen" },
-    { slug: "other", nameEn: "Other", nameAr: "أخرى", nameFr: "Autre" },
+    { slug: "saudi-arabia", code: "SA", nameEn: "Saudi Arabia", nameAr: "المملكة العربية السعودية", nameFr: "Arabie saoudite" },
+    { slug: "uae", code: "AE", nameEn: "United Arab Emirates", nameAr: "الإمارات العربية المتحدة", nameFr: "Émirats arabes unis" },
+    { slug: "egypt", code: "EG", nameEn: "Egypt", nameAr: "مصر", nameFr: "Égypte" },
+    { slug: "jordan", code: "JO", nameEn: "Jordan", nameAr: "الأردن", nameFr: "Jordanie" },
+    { slug: "kuwait", code: "KW", nameEn: "Kuwait", nameAr: "الكويت", nameFr: "Koweït" },
+    { slug: "qatar", code: "QA", nameEn: "Qatar", nameAr: "قطر", nameFr: "Qatar" },
+    { slug: "bahrain", code: "BH", nameEn: "Bahrain", nameAr: "البحرين", nameFr: "Bahreïn" },
+    { slug: "oman", code: "OM", nameEn: "Oman", nameAr: "عُمان", nameFr: "Oman" },
+    { slug: "lebanon", code: "LB", nameEn: "Lebanon", nameAr: "لبنان", nameFr: "Liban" },
+    { slug: "morocco", code: "MA", nameEn: "Morocco", nameAr: "المغرب", nameFr: "Maroc" },
+    { slug: "tunisia", code: "TN", nameEn: "Tunisia", nameAr: "تونس", nameFr: "Tunisie" },
+    { slug: "iraq", code: "IQ", nameEn: "Iraq", nameAr: "العراق", nameFr: "Irak" },
+    { slug: "algeria", code: "DZ", nameEn: "Algeria", nameAr: "الجزائر", nameFr: "Algérie" },
+    { slug: "libya", code: "LY", nameEn: "Libya", nameAr: "ليبيا", nameFr: "Libye" },
+    { slug: "sudan", code: "SD", nameEn: "Sudan", nameAr: "السودان", nameFr: "Soudan" },
+    { slug: "palestine", code: "PS", nameEn: "Palestine", nameAr: "فلسطين", nameFr: "Palestine" },
+    { slug: "syria", code: "SY", nameEn: "Syria", nameAr: "سوريا", nameFr: "Syrie" },
+    { slug: "yemen", code: "YE", nameEn: "Yemen", nameAr: "اليمن", nameFr: "Yémen" },
+    { slug: "mauritania", code: "MR", nameEn: "Mauritania", nameAr: "موريتانيا", nameFr: "Mauritanie" },
+    { slug: "other", code: "", nameEn: "Other", nameAr: "أخرى", nameFr: "Autre" },
   ];
 
   const countryMap: Record<string, string> = {};
   for (const c of countries) {
     const record = await prisma.country.upsert({
       where: { slug: c.slug },
-      update: { nameEn: c.nameEn, nameAr: c.nameAr, nameFr: c.nameFr },
+      update: { nameEn: c.nameEn, nameAr: c.nameAr, nameFr: c.nameFr, code: c.code },
       create: c,
     });
     countryMap[c.slug] = record.id;

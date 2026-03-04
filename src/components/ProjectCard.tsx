@@ -4,6 +4,7 @@ import { Locale, isRtl, t } from "@/lib/i18n";
 import { industryColorMap } from "@/lib/constants";
 import type { Project } from "@/lib/types";
 import { Globe, Mail, Phone, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 
 interface ProjectCardProps {
   project: Project;
@@ -46,12 +47,13 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-teal-400/0 to-transparent rounded-t-2xl transition-all duration-300 group-hover:via-teal-400/60" />
 
       <div className="flex items-start justify-between mb-4">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 shadow-sm">
+        <div className=" rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 shadow-sm">
           {logo ? (
             <img
               src={logo}
               alt={name}
-              className="w-full h-full object-cover rounded-2xl"
+              style={{width:"130px",height:"auto",padding:"15px"}}
+              className=" object-cover rounded-2xl"
             />
           ) : (
             <span className="text-xl font-bold bg-gradient-to-br from-slate-400 to-slate-500 bg-clip-text text-transparent">
@@ -67,7 +69,7 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
       <h3 className="text-[15px] font-bold text-slate-900 mb-1 group-hover:text-teal-700 transition-colors">
         {name}
       </h3>
-      <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3">
+      <div onClick={() => window.open(project.website, "_blank")} style={{cursor:"pointer"}} className="flex items-center gap-1.5 text-xs text-slate-400 mb-3">
         <Globe size={11} />
         <span>{project.website}</span>
       </div>
@@ -78,17 +80,21 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
 
       <div className="space-y-2 mb-5 bg-slate-50/70 rounded-xl p-3.5 border border-slate-100/80">
         <div className="flex items-center gap-2 text-[12px] text-slate-500">
-          <MapPin size={12} className="shrink-0 text-teal-500" />
+          {project.country.code ? (
+            <ReactCountryFlag countryCode={project.country.code} svg style={{ width: "1em", height: "1em" }} className="shrink-0" />
+          ) : (
+            <MapPin size={12} className="shrink-0 text-teal-500" />
+          )}
           <span className="font-medium text-slate-600">{countryName}</span>
         </div>
-        <div className="flex items-center gap-2 text-[12px] text-slate-500">
+        <a href={`mailto:${project.email}`} className="flex items-center gap-2 text-[12px] text-slate-500 hover:text-blue-600 transition-colors">
           <Mail size={12} className="shrink-0 text-blue-400" />
           <span>{project.email}</span>
-        </div>
-        <div className="flex items-center gap-2 text-[12px] text-slate-500">
+        </a>
+        <a href={`tel:${project.phone}`} className="flex items-center gap-2 text-[12px] text-slate-500 hover:text-purple-600 transition-colors">
           <Phone size={12} className="shrink-0 text-purple-400" />
           <span>{project.phone}</span>
-        </div>
+        </a>
       </div>
 
       <button className="mt-auto flex items-center justify-between w-full border border-slate-200 rounded-xl px-4 py-3 text-[13px] font-semibold text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all group/btn cursor-pointer">
