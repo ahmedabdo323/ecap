@@ -9,9 +9,9 @@ import HeroSection from "@/components/HeroSection";
 import Filters from "@/components/Filters";
 import ProjectCard from "@/components/ProjectCard";
 import Footer from "@/components/Footer";
-import { Search, Loader2 } from "lucide-react";
+import { Search } from "lucide-react";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 3;
 
 export default function HomePage() {
   const [locale, setLocale] = useState<Locale>("en");
@@ -78,12 +78,18 @@ export default function HomePage() {
     fetchProjects(1, false);
   }, [fetchProjects]);
 
+  const loadingMoreRef = useRef(false);
+  loadingMoreRef.current = loadingMore;
+
+  const hasMoreRef = useRef(true);
+  hasMoreRef.current = hasMore;
+
   useEffect(() => {
     if (!sentinelRef.current || loading) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+        if (entries[0].isIntersecting && hasMoreRef.current && !loadingMoreRef.current) {
           setPage((prev) => {
             const next = prev + 1;
             fetchProjects(next, true);
@@ -96,7 +102,7 @@ export default function HomePage() {
 
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [hasMore, loadingMore, loading, fetchProjects]);
+  }, [loading, fetchProjects]);
 
   const handleSearch = () => {
     setActiveSearch(searchInput);
@@ -114,7 +120,16 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50" dir={rtl ? "rtl" : "ltr"}>
-      <Header locale={locale} onLocaleChange={setLocale} />
+      <Header
+        locale={locale}
+        onLocaleChange={setLocale}
+        industries={industries}
+        countries={countries}
+        selectedIndustryId={selectedIndustryId}
+        selectedCountryId={selectedCountryId}
+        onIndustryChange={handleIndustryChange}
+        onCountryChange={handleCountryChange}
+      />
       <HeroSection
         locale={locale}
         searchQuery={searchInput}
@@ -153,22 +168,22 @@ export default function HomePage() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-white border border-slate-200/80 rounded-2xl p-6"
+                className="bg-white border border-slate-200/80 rounded-2xl p-6 animate-pulse"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 rounded-2xl skeleton" />
-                  <div className="w-20 h-6 rounded-lg skeleton" />
+                  <div className="w-14 h-14 rounded-2xl bg-slate-200" />
+                  <div className="w-20 h-6 rounded-lg bg-slate-200" />
                 </div>
-                <div className="h-5 skeleton rounded-lg w-3/4 mb-2" />
-                <div className="h-3 skeleton rounded w-1/2 mb-4" />
-                <div className="h-4 skeleton rounded w-full mb-1.5" />
-                <div className="h-4 skeleton rounded w-4/5 mb-5" />
+                <div className="h-5 bg-slate-200 rounded-lg w-3/4 mb-2" />
+                <div className="h-3 bg-slate-100 rounded w-1/2 mb-4" />
+                <div className="h-4 bg-slate-100 rounded w-full mb-1.5" />
+                <div className="h-4 bg-slate-100 rounded w-4/5 mb-5" />
                 <div className="bg-slate-50 rounded-xl p-3.5 space-y-2.5 mb-5">
-                  <div className="h-3 skeleton rounded w-2/3" />
-                  <div className="h-3 skeleton rounded w-3/4" />
-                  <div className="h-3 skeleton rounded w-1/2" />
+                  <div className="h-3 bg-slate-200 rounded w-2/3" />
+                  <div className="h-3 bg-slate-200 rounded w-3/4" />
+                  <div className="h-3 bg-slate-200 rounded w-1/2" />
                 </div>
-                <div className="h-11 skeleton rounded-xl" />
+                <div className="h-11 bg-slate-200 rounded-xl" />
               </div>
             ))}
           </div>
@@ -195,14 +210,33 @@ export default function HomePage() {
               ))}
             </div>
 
-            {loadingMore && (
-              <div className="flex items-center justify-center py-10">
-                <Loader2 size={24} className="text-slate-400 animate-spin" />
-                <span className="text-sm text-slate-400 ms-2">Loading more projects...</span>
+            {hasMore && (
+              <div ref={sentinelRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={`skel-${i}`}
+                    className="bg-white border border-slate-200/80 rounded-2xl p-6 animate-pulse"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-14 h-14 rounded-2xl bg-slate-200" />
+                      <div className="w-20 h-6 rounded-lg bg-slate-200" />
+                    </div>
+                    <div className="h-5 bg-slate-200 rounded-lg w-3/4 mb-2" />
+                    <div className="h-3 bg-slate-100 rounded w-1/2 mb-4" />
+                    <div className="h-4 bg-slate-100 rounded w-full mb-1.5" />
+                    <div className="h-4 bg-slate-100 rounded w-4/5 mb-5" />
+                    <div className="bg-slate-50 rounded-xl p-3.5 space-y-2.5 mb-5">
+                      <div className="h-3 bg-slate-200 rounded w-2/3" />
+                      <div className="h-3 bg-slate-200 rounded w-3/4" />
+                      <div className="h-3 bg-slate-200 rounded w-1/2" />
+                    </div>
+                    <div className="h-11 bg-slate-200 rounded-xl" />
+                  </div>
+                ))}
               </div>
             )}
 
-            <div ref={sentinelRef} className="h-1" />
+            {!hasMore && <div className="h-1" />}
           </>
         )}
       </main>

@@ -120,7 +120,7 @@ export default function Filters({
   const dir = isRtl(locale) ? "rtl" : "ltr";
 
   return (
-    <div dir={dir} className="bg-white border-b border-slate-100 sticky top-16 z-40 backdrop-blur-md bg-white/95">
+    <div dir={dir} className="hidden md:block bg-white border-b border-slate-100 sticky top-0 z-40 backdrop-blur-md bg-white/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-wrap items-center gap-4 justify-between">
           <div className="flex flex-wrap items-center gap-2">

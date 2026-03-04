@@ -52,7 +52,7 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
             <img
               src={logo}
               alt={name}
-              style={{width:"130px",height:"auto",padding:"15px"}}
+              style={{width:"auto",height:"100px",padding:"15px"}}
               className=" object-cover rounded-2xl"
             />
           ) : (
@@ -74,7 +74,7 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
         <span>{project.website}</span>
       </div>
 
-      <p className="text-[13px] text-slate-500 leading-relaxed mb-5 flex-1 line-clamp-2">
+      <p className="text-[13px] text-slate-500 leading-relaxed mb-5 flex-1 ">
         {desc}
       </p>
 
