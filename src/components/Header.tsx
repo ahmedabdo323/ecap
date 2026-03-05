@@ -43,7 +43,7 @@ export default function Header({
     <>
       <header
         style={{ padding: "10px" }}
-        className=" bg-white border-b border-white/[0.06] z-50 backdrop-blur-md sticky top-0"
+        className="bg-white border-b border-white/[0.06] z-50 backdrop-blur-md fixed top-0 left-0 right-0"
         dir={rtl ? "rtl" : "ltr"}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -132,6 +132,8 @@ export default function Header({
           </div>
         </div>
       </header>
+      {/* Spacer for fixed header */}
+      <div className="h-[96px]" />
 
       {/* Backdrop — outside header to avoid stacking context */}
       <div
@@ -218,7 +220,7 @@ export default function Header({
         <div className="flex items-center justify-between p-5 border-b border-slate-100 sticky top-0 bg-white z-10">
           <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
             <Filter size={16} />
-            {t(locale, "filter.industries")} & {t(locale, "filter.region")}
+            {t(locale, "filter.industries")} 
           </h3>
           <button
             onClick={() => setFiltersOpen(false)}
