@@ -97,7 +97,7 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
         </a>
       </div>
 
-      <button className="mt-auto flex items-center justify-between w-full border border-slate-200 rounded-xl px-4 py-3 text-[13px] font-semibold text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all group/btn cursor-pointer">
+      <button onClick={() => window.open(project.website, "_blank")} style={{cursor:"pointer"}} className="mt-auto flex items-center justify-between w-full border border-slate-200 rounded-xl px-4 py-3 text-[13px] font-semibold text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all group/btn cursor-pointer">
         <span>{t(locale, "card.viewProfile")}</span>
         <Arrow size={15} className="transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1" />
       </button>
