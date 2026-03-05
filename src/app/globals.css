@@ -12,6 +12,11 @@
   scroll-behavior: smooth;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
 }
