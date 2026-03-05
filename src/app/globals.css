@@ -26,8 +26,13 @@ body {
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .skeleton {
@@ -37,8 +42,15 @@ body {
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in-up {
@@ -46,8 +58,15 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .hero-mesh {
@@ -62,4 +81,19 @@ body {
     radial-gradient(at 20% 50%, rgba(20, 184, 166, 0.15) 0, transparent 50%),
     radial-gradient(at 80% 20%, rgba(59, 130, 246, 0.12) 0, transparent 50%),
     radial-gradient(at 60% 80%, rgba(168, 85, 247, 0.08) 0, transparent 50%);
+}
+
+.pointer {
+  cursor: pointer !important;
+}
+
+.custom-postion {
+  position: fixed;
+  top: 15px;
+  right: 25px;
+}
+
+[dir="rtl"] .custom-postion {
+  right: auto;
+  left: 25px;
 }

@@ -55,7 +55,7 @@ export default function Header({
             <nav className="hidden md:flex items-center gap-1">
               <button
                 onClick={() => setFiltersOpen(!filtersOpen)}
-                className="flex items-center gap-1.5 text-[13px] text-black hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all relative"
+                className="flex items-center gap-1.5 text-[13px] text-black pointer px-3 py-2 rounded-lg  transition-all relative"
               >
                 <Filter size={14} className="opacity-60" />
                 <span>{t(locale, "filter.industries")}</span>
@@ -70,7 +70,7 @@ export default function Header({
                 href="https://forms.zohopublic.com/sabat/form/eCAPContentDevelopmentFormWave21/formperma/lDnHLGUYWoL8ZIuPefcLqKwNiuHJflmRzLyJNc9AYI0"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[13px] text-black hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all"
+                className="text-[13px] text-black pointer px-3 py-2 rounded-lg  transition-all"
               >
                 {t(locale, "nav.joinProgram")}
               </a>
@@ -80,7 +80,7 @@ export default function Header({
               <div className="relative">
                 <button
                   onClick={() => setLangOpen(!langOpen)}
-                  className="flex items-center gap-1.5 text-[13px] text-black hover:text-white px-3 py-2 rounded-lg hover:bg-white/[0.06] transition-all"
+                  className="flex items-center gap-1.5 text-[13px] text-black  px-3 py-2 rounded-lg pointer transition-all"
                 >
                   <Globe size={14} className="opacity-60" />
                   <span>{localeNames[locale]}</span>

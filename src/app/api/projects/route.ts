@@ -14,15 +14,15 @@ export async function GET(request: NextRequest) {
 
   if (search) {
     where.OR = [
-      { nameEn: { contains: search } },
-      { nameAr: { contains: search } },
-      { nameFr: { contains: search } },
-      { descEn: { contains: search } },
-      { website: { contains: search } },
-      { country: { nameEn: { contains: search } } },
-      { country: { nameAr: { contains: search } } },
-      { industry: { nameEn: { contains: search } } },
-      { industry: { nameAr: { contains: search } } },
+      { nameEn: { contains: search, mode: "insensitive" } },
+      { nameAr: { contains: search, mode: "insensitive" } },
+      { nameFr: { contains: search, mode: "insensitive" } },
+      { descEn: { contains: search, mode: "insensitive" } },
+      { website: { contains: search, mode: "insensitive" } },
+      { country: { nameEn: { contains: search, mode: "insensitive" } } },
+      { country: { nameAr: { contains: search, mode: "insensitive" } } },
+      { industry: { nameEn: { contains: search, mode: "insensitive" } } },
+      { industry: { nameAr: { contains: search, mode: "insensitive" } } },
     ];
   }
 

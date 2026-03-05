@@ -31,7 +31,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "results.showing": "Showing",
     "results.of": "of",
     "results.results": "results",
-    "card.viewProfile": "View Website",
+    "card.viewProfile": "view website",
     "admin.title": "Admin Panel",
     "admin.login": "Login",
     "admin.email": "Email",

@@ -47,7 +47,7 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-teal-400/0 to-transparent rounded-t-2xl transition-all duration-300 group-hover:via-teal-400/60" />
 
       <div className="flex items-start justify-between mb-4">
-        <div className=" rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 shadow-sm">
+        <div style={{marginTop:"25px"}} className=" rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 shadow-sm">
           {logo ? (
             <img
               src={logo}
@@ -61,7 +61,7 @@ export default function ProjectCard({ project, locale, index }: ProjectCardProps
             </span>
           )}
         </div>
-        <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg ${colorClass}`}>
+        <span className={`text-[11px] font-semibold px-2.5 py-1 custom-postion rounded-lg ${colorClass}`}>
           {industryName}
         </span>
       </div>
